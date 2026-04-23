@@ -4,3 +4,7 @@ spacy
 scikit-learn
 PyPDF2
 python-multipart
+streamlit
+requests
+matplotlib
+reportlab
