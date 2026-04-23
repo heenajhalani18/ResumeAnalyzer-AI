@@ -5,31 +5,49 @@ API_URL = "https://resume-analyzer-ai-4xml.onrender.com/analyze"
 
 st.set_page_config(page_title="AI Resume Matcher", layout="centered")
 
-# 🎨 HEADER
-st.title("🚀 AI Resume Matcher")
-st.caption("Get instant resume insights, skill gaps, and recommendations")
+# 🎨 CUSTOM STYLING
+st.markdown("""
+    <style>
+        .main {
+            background-color: #0f172a;
+            color: white;
+        }
+        .stButton>button {
+            background-color: #6366f1;
+            color: white;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .stFileUploader {
+            background-color: #1e293b;
+            padding: 10px;
+            border-radius: 10px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# 🚀 HEADER
+st.markdown("<h1 style='text-align: center;'>🚀 AI Resume Matcher</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>Analyze your resume and discover skill gaps instantly</p>", unsafe_allow_html=True)
 
 st.markdown("---")
 
-# 📄 INPUT SECTION
-st.subheader("📄 Upload Your Resume")
+# 📄 INPUT CARD
+st.markdown("### 📄 Upload Resume")
 
 file = st.file_uploader("Upload PDF", type=["pdf"])
 
 col1, col2 = st.columns(2)
 
 with col1:
-    required_skills = st.text_input("Required Skills (comma-separated)")
+    required_skills = st.text_input("Required Skills")
 
 with col2:
-    role = st.selectbox(
-        "Or Select Role",
-        ["", "software engineer", "ml engineer", "frontend developer"]
-    )
+    role = st.selectbox("Select Role", ["", "software engineer", "ml engineer", "frontend developer"])
 
 st.markdown("---")
 
-# 🚀 BUTTON
+# 🚀 ANALYZE BUTTON
 if st.button("🔍 Analyze Resume"):
 
     if file is None:
@@ -37,10 +55,10 @@ if st.button("🔍 Analyze Resume"):
         st.stop()
 
     if not required_skills and not role:
-        st.error("Enter skills or select a role")
+        st.warning("Enter skills or select a role")
         st.stop()
 
-    with st.spinner("Analyzing... ⏳"):
+    with st.spinner("Analyzing your resume..."):
 
         files = {"file": file.getvalue()}
         data = {
@@ -55,35 +73,34 @@ if st.button("🔍 Analyze Resume"):
 
             st.markdown("---")
 
-            # 📊 SCORE
-            score = result["summary"].split()[3]
+            # 🎯 SCORE SECTION
+            score = float(result["summary"].split()[3])
 
-            st.metric("🎯 Match Score", f"{score}")
-
-            # 📊 PROGRESS BAR
-            st.progress(float(score) / 100)
+            st.markdown("## 🎯 Match Score")
+            st.progress(score / 100)
+            st.markdown(f"<h2 style='text-align:center; color:#22c55e;'>{score}%</h2>", unsafe_allow_html=True)
 
             st.markdown("---")
 
-            # RESULTS IN COLUMNS
+            # 📊 RESULTS GRID
             col1, col2 = st.columns(2)
 
             with col1:
-                st.subheader("✅ Matched Skills")
+                st.markdown("### ✅ Matched Skills")
                 for skill in result["matched_skills"]:
-                    st.success(skill)
+                    st.markdown(f"✔️ {skill}")
 
             with col2:
-                st.subheader("❌ Missing Skills")
+                st.markdown("### ❌ Missing Skills")
                 for skill in result["missing_skills"]:
-                    st.error(skill)
+                    st.markdown(f"❌ {skill}")
 
             st.markdown("---")
 
             # 💡 RECOMMENDATIONS
-            st.subheader("💡 Recommendations")
+            st.markdown("### 💡 Recommendations")
             for rec in result["recommendations"]:
-                st.write("👉", rec)
+                st.info(rec)
 
         else:
-            st.error("Something went wrong. Try again.")
+            st.error("Something went wrong. Please try again.")
