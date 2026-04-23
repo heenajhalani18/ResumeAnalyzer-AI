@@ -56,6 +56,7 @@ async def analyze_resume(
         "total_required_skills": len(required_skills_list),
         "matched_count": len(matched)
     }
+
 @app.get("/")
 def home():
     return {"message": "Resume Analyzer AI is running 🚀"}

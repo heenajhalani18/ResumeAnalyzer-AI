@@ -1,4 +1,3 @@
-#import spacy
 from PyPDF2 import PdfReader
 
 try:
@@ -6,7 +5,7 @@ try:
     nlp = spacy.load("en_core_web_sm")
 except:
     nlp = None
-
+    
 SYNONYMS = {
     "nodejs": "node.js",
     "node js": "node.js",
