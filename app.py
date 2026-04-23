@@ -1,59 +1,89 @@
 import streamlit as st
 import requests
 
-# 🔗 Your deployed API
 API_URL = "https://resume-analyzer-ai-4xml.onrender.com/analyze"
 
-st.set_page_config(page_title="Resume Analyzer AI", layout="centered")
+st.set_page_config(page_title="AI Resume Matcher", layout="centered")
 
-st.title("📄 Resume Analyzer AI")
-st.write("Upload your resume and check your job match score 🚀")
+# 🎨 HEADER
+st.title("🚀 AI Resume Matcher")
+st.caption("Get instant resume insights, skill gaps, and recommendations")
 
-# 📄 Upload resume
-file = st.file_uploader("Upload Resume (PDF)", type=["pdf"])
+st.markdown("---")
 
-# 🎯 Input fields
-required_skills = st.text_input("Enter required skills (comma-separated)")
-role = st.selectbox(
-    "OR select a role",
-    ["", "software engineer", "ml engineer", "frontend developer"]
-)
+# 📄 INPUT SECTION
+st.subheader("📄 Upload Your Resume")
 
-# 🚀 Button
-if st.button("Analyze Resume"):
+file = st.file_uploader("Upload PDF", type=["pdf"])
+
+col1, col2 = st.columns(2)
+
+with col1:
+    required_skills = st.text_input("Required Skills (comma-separated)")
+
+with col2:
+    role = st.selectbox(
+        "Or Select Role",
+        ["", "software engineer", "ml engineer", "frontend developer"]
+    )
+
+st.markdown("---")
+
+# 🚀 BUTTON
+if st.button("🔍 Analyze Resume"):
 
     if file is None:
         st.error("Please upload a resume")
-    else:
-        with st.spinner("Analyzing resume..."):
+        st.stop()
 
-            # Prepare request
-            files = {"file": file.getvalue()}
-            data = {
-                "required_skills": required_skills,
-                "role": role
-            }
+    if not required_skills and not role:
+        st.error("Enter skills or select a role")
+        st.stop()
 
-            # Call API
-            response = requests.post(API_URL, files=files, data=data)
+    with st.spinner("Analyzing... ⏳"):
 
-            if response.status_code == 200:
-                result = response.json()
+        files = {"file": file.getvalue()}
+        data = {
+            "required_skills": required_skills,
+            "role": role
+        }
 
-                st.success("Analysis Complete ✅")
+        response = requests.post(API_URL, files=files, data=data)
 
-                st.subheader("📊 Summary")
-                st.write(result["summary"])
+        if response.status_code == 200:
+            result = response.json()
 
+            st.markdown("---")
+
+            # 📊 SCORE
+            score = result["summary"].split()[3]
+
+            st.metric("🎯 Match Score", f"{score}")
+
+            # 📊 PROGRESS BAR
+            st.progress(float(score) / 100)
+
+            st.markdown("---")
+
+            # RESULTS IN COLUMNS
+            col1, col2 = st.columns(2)
+
+            with col1:
                 st.subheader("✅ Matched Skills")
-                st.write(result["matched_skills"])
+                for skill in result["matched_skills"]:
+                    st.success(skill)
 
+            with col2:
                 st.subheader("❌ Missing Skills")
-                st.write(result["missing_skills"])
+                for skill in result["missing_skills"]:
+                    st.error(skill)
 
-                st.subheader("💡 Recommendations")
-                for rec in result["recommendations"]:
-                    st.write("- ", rec)
+            st.markdown("---")
 
-            else:
-                st.error("Something went wrong. Try again.")
+            # 💡 RECOMMENDATIONS
+            st.subheader("💡 Recommendations")
+            for rec in result["recommendations"]:
+                st.write("👉", rec)
+
+        else:
+            st.error("Something went wrong. Try again.")
