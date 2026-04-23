@@ -6,9 +6,9 @@ ResumeAnalyzer-AI is an AI-powered backend system that analyzes resumes (PDF for
 
 ## 🌐 Live Demo
 
-🔗 Web App: https://resume-analyzer-heenajhalani.streamlit.app/
-🔗 API Docs: https://resume-analyzer-ai-4xml.onrender.com/docs
-Live Demo: https://resume-analyzer-heenajhalani.streamlit.app/
+*🔗 Web App: https://resume-analyzer-heenajhalani.streamlit.app/
+*🔗 API Docs: https://resume-analyzer-ai-4xml.onrender.com/docs
+*Live Demo: https://resume-analyzer-heenajhalani.streamlit.app/
 ---
 ## 🚀 Features
 
